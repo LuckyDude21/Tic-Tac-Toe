@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 5px;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .cell.taken {
+            cursor: not-allowed;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    <div class="board" id="board"></div>
+    <div class="message" id="message"></div>
+    <script>
+        const board = document.getElementById("board");
+        const message = document.getElementById("message");
+
+        let currentPlayer = "X";
+        let gameBoard = [["", "", ""], ["", "", ""], ["", "", ""]];
+        let gameOver = false;
+
+        function createBoard() {
+            board.innerHTML = "";
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 3; col++) {
+                    const cell = document.createElement("div");
+                    cell.classList.add("cell");
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    cell.addEventListener("click", handleCellClick);
+                    board.appendChild(cell);
+                }
+            }
+        }
+
+        function checkWinner() {
+            for (let row = 0; row < 3; row++) {
+                if (gameBoard[row][0] === gameBoard[row][1] && gameBoard[row][1] === gameBoard[row][2] && gameBoard[row][0] !== "") {
+                    return gameBoard[row][0];
+                }
+            }
+            for (let col = 0; col < 3; col++) {
+                if (gameBoard[0][col] === gameBoard[1][col] && gameBoard[1][col] === gameBoard[2][col] && gameBoard[0][col] !== "") {
+                    return gameBoard[0][col];
+                }
+            }
+            if (gameBoard[0][0] === gameBoard[1][1] && gameBoard[1][1] === gameBoard[2][2] && gameBoard[0][0] !== "") {
+                return gameBoard[0][0];
+            }
+            if (gameBoard[0][2] === gameBoard[1][1] && gameBoard[1][1] === gameBoard[2][0] && gameBoard[0][2] !== "") {
+                return gameBoard[0][2];
+            }
+            return null;
+        }
+
+        function isDraw() {
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 3; col++) {
+                    if (gameBoard[row][col] === "") {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function handleCellClick(event) {
+            if (gameOver) return;
+            const cell = event.target;
+            const row = cell.dataset.row;
+            const col = cell.dataset.col;
+
+            if (gameBoard[row][col] !== "") {
+                return;
+            }
+
+            gameBoard[row][col] = currentPlayer;
+            cell.textContent = currentPlayer;
+            cell.classList.add("taken");
+
+            const winner = checkWinner();
+            if (winner) {
+                message.textContent = `Player ${winner} wins! 🎉`;
+                gameOver = true;
+                return;
+            }
+
+            if (isDraw()) {
+                message.textContent = "It's a draw! 🤝";
+                gameOver = true;
+                return;
+            }
+
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            message.textContent = `Player ${currentPlayer}'s turn`;
+        }
+
+        createBoard();
+        message.textContent = `Player ${currentPlayer}'s turn`;
+    </script>
+</body>
+</html>
